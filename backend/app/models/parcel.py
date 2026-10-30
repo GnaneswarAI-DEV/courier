@@ -3,8 +3,10 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
-
-from sqlalchemy import CheckConstraint, Date, DateTime, Enum, ForeignKey, Index, Numeric, String
+from sqlalchemy import (
+    BigInteger, CheckConstraint, Date, DateTime, Enum,
+    ForeignKey, Index, Numeric, String
+)
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -26,10 +28,14 @@ class Parcel(Base):
     )
 
     tracking_number: Mapped[str] = mapped_column(String(24), primary_key=True)
-    sender_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
-    receiver_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"), nullable=False)
+    sender_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.user_id"), nullable=False
+    )
+    receiver_id: Mapped[int] = mapped_column(
+        BigInteger, ForeignKey("users.user_id"), nullable=False
+    )
     driver_id: Mapped[int | None] = mapped_column(
-        ForeignKey("users.user_id"), nullable=True, index=True
+        BigInteger, ForeignKey("users.user_id"), nullable=True
     )
     weight: Mapped[Decimal] = mapped_column(Numeric(8, 2), nullable=False)
     pickup_address: Mapped[str] = mapped_column(String(255), nullable=False)

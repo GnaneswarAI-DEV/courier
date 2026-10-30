@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Index, String
+from sqlalchemy import BigInteger, DateTime, Enum, ForeignKey, Index, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -20,7 +20,9 @@ class TrackingLog(Base):
     __tablename__ = "tracking_logs"
     __table_args__ = (Index("ix_tracking_logs_parcel_time", "tracking_number", "updated_at"),)
 
-    log_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    log_id: Mapped[int] = mapped_column(
+    BigInteger, primary_key=True, autoincrement=True
+)
     tracking_number: Mapped[str] = mapped_column(
         ForeignKey("parcels.tracking_number", ondelete="CASCADE"), nullable=False, index=True
     )
@@ -29,7 +31,9 @@ class TrackingLog(Base):
     )
     location: Mapped[str] = mapped_column(String(255), nullable=False)
     remarks: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    created_by: Mapped[int | None] = mapped_column(ForeignKey("users.user_id"), nullable=True)
+    created_by: Mapped[int | None] = mapped_column(
+    BigInteger, ForeignKey("users.user_id"), nullable=True
+)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=utcnow)
 
     parcel: Mapped[Parcel] = relationship(back_populates="logs")
