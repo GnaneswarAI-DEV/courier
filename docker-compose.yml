@@ -1,0 +1,53 @@
+name: courier-platform
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-courier}
+      MYSQL_USER: ${MYSQL_USER:-courier}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-courierpass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-rootpass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: development
+      LOG_LEVEL: INFO
+      SECRET_KEY: ${SECRET_KEY:-local-compose-secret-key-change-me-before-sharing}
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER:-courier}:${MYSQL_PASSWORD:-courierpass}@db:3306/${MYSQL_DATABASE:-courier}
+      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      BOOTSTRAP_ADMIN_EMAIL: ${BOOTSTRAP_ADMIN_EMAIL:-admin@courier.dev}
+      BOOTSTRAP_ADMIN_PASSWORD: ${BOOTSTRAP_ADMIN_PASSWORD:-AdminPass123}
+      BOOTSTRAP_ADMIN_NAME: ${BOOTSTRAP_ADMIN_NAME:-Meera Admin}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: /api/v1
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  dbdata:

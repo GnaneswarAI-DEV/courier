@@ -1,0 +1,28 @@
+# Render blueprint for the FastAPI backend.
+# The database is Aiven MySQL, not a Render database, so DATABASE_URL is set
+# manually in the dashboard (sync: false) and never committed.
+services:
+  - type: web
+    name: courier-parcel-tracking-api
+    runtime: docker
+    plan: free
+    region: singapore
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL_CA
+        value: /etc/secrets/ca.pem
+      - key: CORS_ORIGINS
+        sync: false
+      - key: BOOTSTRAP_ADMIN_EMAIL
+        sync: false
+      - key: BOOTSTRAP_ADMIN_PASSWORD
+        sync: false

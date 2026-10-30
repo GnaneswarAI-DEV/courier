@@ -1,0 +1,33 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+backend/.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.db
+*.sqlite3
+backend/ca.pem
+
+# --- Node ---
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+npm-debug.log*
+
+# --- Secrets and environment ---
+.env
+.env.*
+!.env.example
+!frontend/.env.example
+!backend/.env.example
+*.pem
+!frontend/public/*.svg
+
+# --- Editors / OS ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
